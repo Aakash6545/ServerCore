@@ -1,11 +1,6 @@
+import "../envConfig.js"
 import { v2 as cloudinary } from "cloudinary";
 import fs from "fs";
-import dotenv from "dotenv"
-dotenv.config({
-  path: "../../.env"
-})
-
-console.log(process.env.CLOUDINARY_CLOUD_NAME);
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -16,6 +11,11 @@ cloudinary.config({
 async function uploadOnCloudinary(localFilePath) {
   let uploadResult = null;
   try {
+    if (!localFilePath){
+      console.log("No Localpath provided to upload.");
+      
+      return null;
+    } 
     uploadResult = await cloudinary.uploader.upload(localFilePath, {
       resource_type: "auto",
     });
@@ -29,9 +29,8 @@ async function uploadOnCloudinary(localFilePath) {
       console.error("Error deleting local file:", deleteError);
     }
   }
-  console.log(uploadResult);
 
   return uploadResult;
 }
-uploadOnCloudinary("../../public/p-photo-new.jpg")
+
 export { uploadOnCloudinary };
