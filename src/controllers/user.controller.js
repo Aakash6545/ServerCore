@@ -99,9 +99,6 @@ const loginUser = asyncHandler(async (req, res) => {
   // if pss correct generate access and refresh token  for the user
   // set cookies as access token and refresh token
   // return the user
-
-  console.log(req.body);
-
   const { email, username, password } = req.body;
 
   if (!username && !email) {
@@ -151,5 +148,27 @@ const loginUser = asyncHandler(async (req, res) => {
       )
     );
 });
+const logoutUser = asyncHandler(async(req, res) => {
+    // find user by req.user._id and replace (unset refreshToken) new: true
+    //  clear the cookie and send response
+    user_id = req.user._id;
+    user = User.findById(user_id);
+    user.refreashToken = undefined;
+    user.save({validateBeforeSave: false})
+    const options = {
+        httpOnly: true,
+        secure: true,
+      };
+    res
+    .status(200)
+    .cookie("accessToken", "", options)
+    .cookie("refreshToken", "", options)
+    .json(
+      new ApiResponse(
+        201,
+        "User Logged Out successfully."
+      )
+    );
 
-export { registerUser, loginUser };
+})
+export { registerUser, loginUser, logoutUser };
